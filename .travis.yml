@@ -11,8 +11,12 @@ matrix:
     - opt_release: "22.0"
   fast_finish: true
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y minikube
+
 install:
   - rebar3 get-deps
 
 script:
-  - rebar3 travis
+  - rebar3 check
