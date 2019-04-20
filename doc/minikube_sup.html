@@ -16,15 +16,28 @@
 
 <h2><a name="description">Description</a></h2>minikube top level supervisor.
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#init-1">init/1</a></td><td></td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#add_profile-1">add_profile/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#init-1">init/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#remove_profile-1">remove_profile/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td></td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
 
+<h3 class="function"><a name="add_profile-1">add_profile/1</a></h3>
+<div class="spec">
+<p><tt>add_profile(Profile::atom()) -&gt; <a href="supervisor.html#type-startchild_ret">supervisor:startchild_ret()</a></tt><br></p>
+</div>
+
 <h3 class="function"><a name="init-1">init/1</a></h3>
 <div class="spec">
-<p><tt>init(X1) -&gt; any()</tt></p>
+<p><tt>init(X1::[]) -&gt; ignore | {ok, Spec}</tt>
+<ul class="definitions"><li><tt>Spec = {<a href="supervisor.html#type-sup_flags">supervisor:sup_flags()</a>, [<a href="supervisor.html#type-child_spec">supervisor:child_spec()</a>]}</tt></li></ul></p>
+</div>
+
+<h3 class="function"><a name="remove_profile-1">remove_profile/1</a></h3>
+<div class="spec">
+<p><tt>remove_profile(Profile::atom()) -&gt; <a href="supervisor.html#type-startchild_ret">supervisor:startchild_ret()</a></tt><br></p>
 </div>
 
 <h3 class="function"><a name="start_link-0">start_link/0</a></h3>
