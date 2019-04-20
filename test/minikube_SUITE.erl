@@ -36,6 +36,12 @@ suite() ->
 
 init_per_suite(Config) ->
     ok = application:ensure_started(minikube),
+    case os:getenv("TRAVIS") of
+        "true" ->
+            application:set_env(minikube, vm_driver, none);
+        _ ->
+            application:set_env(minikube, vm_driver, kvm2)
+    end,
     Config.
 
 end_per_suite(_Config) ->
