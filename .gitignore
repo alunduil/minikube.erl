@@ -1,3 +1,5 @@
+.direnv/
+
 .rebar3
 _*
 .eunit
