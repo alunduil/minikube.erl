@@ -28,4 +28,10 @@ install:
   - rebar3 get-deps
 
 script:
-  - rebar3 check
+  - rebar3 xref
+  - rebar3 dialyzer
+  - rebar3 elvis
+  - rebar3 compile
+  - rebar3 eunit
+  - rebar3 ct
+  - rebar3 edoc
