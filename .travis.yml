@@ -1,0 +1,38 @@
+language: erlang
+otp_release:
+  - "21.1"
+  - "21.2"
+  - "21.3"
+  - "22.0"
+matrix:
+  allow_failures:
+    - otp_release: "22.0"
+  fast_finish: true
+
+# sudo: required
+#
+# env:
+#   - CHANGE_MINIKUBE_NONE_USER=true
+#
+# before_script:
+#   - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+#   - chmod +x kubectl
+#   - sudo mv kubectl /usr/local/bin
+#   - curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+#   - chmod +x minikube
+#   - sudo mv minikube /usr/local/bin
+
+install:
+  - rebar3 get-deps
+
+script:
+  - rebar3 xref
+  - rebar3 dialyzer
+  - rebar3 elvis
+  - rebar3 compile
+  - rebar3 eunit
+  # - rebar3 ct --readable=false  # See https://github.com/erlang/rebar3/issues/1778
+  - rebar3 edoc
+
+after_success:
+  - rebar3 as test coveralls send
