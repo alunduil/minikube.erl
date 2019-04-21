@@ -38,8 +38,10 @@ init_per_suite(Config) ->
     ok = application:ensure_started(minikube),
     case os:getenv("TRAVIS") of
         "true" ->
+            io:fwrite("using travis"),
             application:set_env(minikube, vm_driver, none);
         _ ->
+            io:fwrite("not using travis"),
             application:set_env(minikube, vm_driver, kvm2)
     end,
     Config.
