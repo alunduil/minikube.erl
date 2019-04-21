@@ -5,6 +5,8 @@
 
 -module(minikube_cmd).
 
+-include_lib("kernel/include/logger.hrl").
+
 -behaviour(minikube_driver).
 
 %% API
@@ -17,6 +19,7 @@
 -spec start(Profile::string()) -> ok.
 start(Profile) ->
     {ok, Driver} = application:get_env(vm_driver),
+    ?LOG_DEBUG(#{vm_driver => Driver}),
     os:cmd(minikube_cmd(Profile, atom_to_list(Driver)) ++ " start"),
     ok.
 
