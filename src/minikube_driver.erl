@@ -5,6 +5,8 @@
 
 -module(minikube_driver).
 
+-include_lib("kernel/include/logger.hrl").
+
 -behaviour(gen_statem).
 
 %% API
@@ -72,8 +74,10 @@ init([Profile]) ->
                       cmd_module=CmdModule,
                       profile=atom_to_list(Profile)
                      },
+            ?LOG_DEBUG(#{status => Status, data => Data}),
             {ok, Status, Data};
         {error, Reason} ->
+            ?LOG_ERROR(#{error => Reason}),
             {stop, Reason}
     end.
 
@@ -88,8 +92,10 @@ handle_event(
     CmdModule:start(Profile),
     case CmdModule:status(Profile) of
         {ok, Status} ->
+            ?LOG_DEBUG(#{status => Status, data => Data}),
             {next_state, Status, Data, {reply, From, ok}};
         Other ->
+            ?LOG_ERROR(#{error => Other}),
             {keep_state_and_data, {reply, From, Other}}
     end;
 handle_event(
@@ -100,8 +106,10 @@ handle_event(
  ) ->
     case CmdModule:status(Profile) of
         {ok, Status} ->
+            ?LOG_DEBUG(#{status => Status, data => Data}),
             {next_state, Status, Data, {reply, From, {ok, Status}}};
         Other ->
+            ?LOG_ERROR(#{error => Other}),
             {keep_state_and_data, {reply, From, Other}}
     end;
 handle_event(
@@ -113,8 +121,10 @@ handle_event(
     CmdModule:stop(Profile),
     case CmdModule:status(Profile) of
         {ok, Status} ->
+            ?LOG_DEBUG(#{status => Status, data => Data}),
             {next_state, Status, Data, {reply, From, ok}};
         Other ->
+            ?LOG_ERROR(#{error => Other}),
             {keep_state_and_data, {reply, From, Other}}
     end.
 
@@ -125,6 +135,7 @@ terminate(
  ) ->
     case minikube_status:is_running(Status) of
         true ->
+            ?LOG_DEBUG(#{action => stop, profile => Profile}),
             CmdModule:stop(Profile),
             ok;
         false ->
