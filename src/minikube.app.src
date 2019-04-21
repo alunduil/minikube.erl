@@ -1,5 +1,5 @@
 {application, minikube,
- [{description, "An OTP application"},
+ [{description, "Minikube VM Manager"},
   {vsn, "0.1.0"},
   {registered, []},
   {mod, {minikube_app, []}},
