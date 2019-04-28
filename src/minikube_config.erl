@@ -17,12 +17,12 @@
 -spec get(Name::atom()) -> string().
 get(Name) ->
     ?LOG_INFO(#{action => get, name => Name}),
-    os:cmd(minikube_config_cmd(get) ++ " " ++ minikube_property:from_atom(Name)).
+    string:trim(os:cmd(string:join([minikube_config_cmd(get), minikube_property:from_atom(Name)], " "))).
 
 -spec set(Name::atom(), Value::string()) -> ok.
 set(Name, Value) ->
     ?LOG_INFO(#{action => set, name => Name, value => Value}),
-    os:cmd(minikube_config_cmd(set) ++ " " ++ minikube_property:from_atom(Name) ++ " " ++ Value),
+    os:cmd(string:join([minikube_config_cmd(set), minikube_property:from_atom(Name), Value], " ")),
     ok.
 
 -spec view() -> [{atom(), string()}].
@@ -36,11 +36,11 @@ view() ->
 
 -spec minikube_config_cmd(SubCommand::atom()) -> string().
 minikube_config_cmd(get) ->
-    minikube_config_cmd() ++ " get";
+    string:join([minikube_config_cmd(), "get"], " ");
 minikube_config_cmd(set) ->
-    minikube_config_cmd() ++ " set";
+    string:join([minikube_config_cmd(), "set"], " ");
 minikube_config_cmd(view) ->
-    minikube_config_cmd() ++ " view".
+    string:join([minikube_config_cmd(), "view"], " ").
 
 -spec minikube_config_cmd() -> string().
 minikube_config_cmd() ->
