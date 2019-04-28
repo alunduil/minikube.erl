@@ -11,6 +11,9 @@ matrix:
 
 sudo: required
 
+services:
+  - docker
+
 env:
   - CHANGE_MINIKUBE_NONE_USER=true
 
@@ -27,7 +30,6 @@ install:
   - rebar3 get-deps
 
 script:
-  - systemctl status
   - sudo minikube start -p sentinel
   - sudo minikube stop -p sentinel
   - rebar3 xref
