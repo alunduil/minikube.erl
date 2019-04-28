@@ -21,17 +21,20 @@ before_script:
   - curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
   - chmod +x minikube
   - sudo mv minikube /usr/local/bin
+  - sudo minikube config set vm-driver none
 
 install:
   - rebar3 get-deps
 
 script:
+  - sudo minikube start -p sentinel
+  - sudo minikube stop -p sentinel
   - rebar3 xref
   - rebar3 dialyzer
   - rebar3 elvis
   - rebar3 compile
   - rebar3 eunit
-  - sudo rebar3 ct --readable=false  # See https://github.com/erlang/rebar3/issues/1778
+  - rebar3 ct --readable=false  # See https://github.com/erlang/rebar3/issues/1778
   - rebar3 edoc
 
 after_success:
