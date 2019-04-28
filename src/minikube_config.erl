@@ -48,5 +48,6 @@ minikube_config_cmd() ->
 
 -spec parse_view(string()) -> [proplists:property()].
 parse_view(Input) ->
-    [Document] = yamerl:decode(Input),
-    [{minikube_property:to_atom(Name), Value}||{Name, Value} <- Document].
+    [Document|_] = yamerl:decode(Input),
+    ?LOG_DEBUG(#{input => Input, document => Document}),
+    [{minikube_property:to_atom(Name), Value}||[{Name, Value}|_] <- Document].
