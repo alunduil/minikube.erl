@@ -27,6 +27,7 @@ install:
   - rebar3 get-deps
 
 script:
+  - systemctl status
   - sudo minikube start -p sentinel
   - sudo minikube stop -p sentinel
   - rebar3 xref
