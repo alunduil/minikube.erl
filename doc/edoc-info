@@ -1,4 +1,4 @@
 %% encoding: UTF-8
 {application,minikube}.
-{modules,[minikube,minikube_app,minikube_cmd,minikube_driver,minikube_status,
-          minikube_sup]}.
+{modules,[minikube,minikube_app,minikube_cmd,minikube_config,minikube_driver,
+          minikube_property,minikube_status,minikube_sup]}.

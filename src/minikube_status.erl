@@ -5,7 +5,7 @@
 
 -module(minikube_status).
 
--ifdef(TEST).
+-ifdef(EUNIT).
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
@@ -100,7 +100,7 @@ parse([Line|_Rest], _Status) ->
 parse([], Status) ->
     {ok, Status}.
 
--ifdef(TEST).
+-ifdef(EUNIT).
 -spec parse_test_() -> [fun(() -> term())].
 parse_test_() ->
     Expected1 = #status{

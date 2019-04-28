@@ -6,12 +6,28 @@
 -module(minikube).
 
 %% API
--export([ensure_started/0, ensure_started/1, start/0, start/1, is_running/0, is_running/1, stop/0, stop/1, which_profiles/0]).
+-export([
+         config/0,
+         config/1,
+         config/2,
+         ensure_started/0,
+         ensure_started/1,
+         start/0,
+         start/1,
+         is_running/0,
+         is_running/1,
+         stop/0,
+         stop/1,
+         which_profiles/0
+        ]).
 
 %% Types
 -export_type([profile/0]).
 
 -ignore_xref([
+              {?MODULE, config, 0},
+              {?MODULE, config, 1},
+              {?MODULE, config, 2},
               {?MODULE, ensure_started, 0},
               {?MODULE, ensure_started, 1},
               {?MODULE, start, 0},
@@ -32,6 +48,20 @@
 %%====================================================================
 %% API functions
 %%====================================================================
+
+-spec config() -> [proplists:property()].
+config() ->
+    minikube_config:view().
+
+-spec config(atom()) -> string().
+config(Name) ->
+    minikube_config:get(Name).
+
+-spec config(Name, Value) -> ok when
+      Name :: atom(),
+      Value :: string().
+config(Name, Value) ->
+    minikube_config:set(Name, Value).
 
 -spec ensure_started() -> ok | {error, Reason} when
       Reason :: term().
