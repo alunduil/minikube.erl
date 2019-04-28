@@ -35,7 +35,7 @@ suite() ->
     [{timestamp, {seconds, 30}}].
 
 init_per_suite(Config) ->
-    ok = application:ensure_started(minikube),
+    {ok, _} = application:ensure_all_started(minikube),
     case os:getenv("TRAVIS") of
         "true" ->
             io:fwrite("using travis"),

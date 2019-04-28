@@ -18,9 +18,7 @@
 
 -spec start(Profile::string()) -> ok.
 start(Profile) ->
-    {ok, Driver} = application:get_env(vm_driver),
-    ?LOG_DEBUG(#{vm_driver => Driver}),
-    os:cmd(string:join([minikube_cmd(Profile, atom_to_list(Driver)), "start"], " ")),
+    os:cmd(string:join([minikube_cmd(Profile), "start"], " ")),
     ok.
 
 -spec status(string()) -> {ok, minikube_status:type()} | {error, Reason} when
@@ -36,10 +34,6 @@ stop(Profile) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
-
--spec minikube_cmd(Profile::string(), Driver::string()) -> string().
-minikube_cmd(Profile, Driver) ->
-    string:join([minikube_cmd(Profile), "--vm-driver", Driver], " ").
 
 -spec minikube_cmd(Profile::string()) -> string().
 minikube_cmd(Profile) ->
