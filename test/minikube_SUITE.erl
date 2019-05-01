@@ -35,14 +35,13 @@ suite() ->
     [{timestamp, {seconds, 30}}].
 
 init_per_suite(Config) ->
-    ok = application:ensure_started(minikube),
+    {ok, _} = application:ensure_all_started(minikube),
     case os:getenv("TRAVIS") of
         "true" ->
             io:fwrite("using travis"),
-            application:set_env(minikube, vm_driver, none);
+            minikube:config(vm_driver, none);
         _ ->
-            io:fwrite("not using travis"),
-            application:set_env(minikube, vm_driver, kvm2)
+            io:fwrite("not using travis")
     end,
     Config.
 

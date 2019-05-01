@@ -5,7 +5,8 @@
   {mod, {minikube_app, []}},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    yamerl
    ]},
   {env,[]},
   {modules, []},
