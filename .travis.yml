@@ -42,7 +42,7 @@ script:
   - rebar3 elvis
   - rebar3 compile
   - rebar3 eunit
-  - rebar3 ct
+  - sudo rebar3 ct
   - rebar3 edoc
 
 after_success:
