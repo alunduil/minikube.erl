@@ -35,8 +35,7 @@ install:
   - rebar3 get-deps
 
 script:
-  - sudo minikube start -p sentinel
-  - sudo minikube stop -p sentinel
+  - echo $PATH
   - rebar3 xref
   - rebar3 dialyzer
   - rebar3 elvis
