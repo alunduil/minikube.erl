@@ -14,6 +14,8 @@
          ensure_started/1,
          start/0,
          start/1,
+         start_link/0,
+         start_link/1,
          is_running/0,
          is_running/1,
          stop/0,
@@ -32,6 +34,8 @@
               {?MODULE, ensure_started, 1},
               {?MODULE, start, 0},
               {?MODULE, start, 1},
+              {?MODULE, start_link, 0},
+              {?MODULE, start_link, 1},
               {?MODULE, is_running, 0},
               {?MODULE, is_running, 1},
               {?MODULE, stop, 0},
@@ -98,6 +102,18 @@ start(Profile) ->
         Error ->
             Error
     end.
+
+-spec start_link() -> ok | {error, Reason} when
+      Reason :: term().
+start_link() ->
+    start_link(minikube).
+
+-spec start_link(profile()) -> ok | {error, Reason} when
+      Reason :: term().
+start_link(Profile) ->
+    Result = minikube_driver:start_link(Profile),
+    ok = minikube_driver:start(Profile),
+    Result.
 
 -spec is_running() -> boolean() | {error, Reason} when
       Reason :: term().

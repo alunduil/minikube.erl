@@ -19,6 +19,10 @@
          idempotent_ensure_started/1,
          nonidempotent_start/0,
          nonidempotent_start/1,
+         link_start/0,
+         link_start/1,
+         ensure_stopped/0,
+         ensure_stopped/1,
          start_then_stop/0,
          start_then_stop/1,
          no_profiles/0,
@@ -65,6 +69,7 @@ groups() ->
     [
      {ensure_started, [], [idempotent_ensure_started]},
      {start, [], [nonidempotent_start]},
+     {start_link, [], [link_start, ensure_stopped]},
      {stop, [{repeat, 3}], [start_then_stop]},
      {which_profiles, [], [no_profiles, sentinel_profile]},
      {status, [], [not_started_status, started_status]}
@@ -74,6 +79,7 @@ all() ->
     [
      {group, ensure_started},
      {group, start},
+     {group, start_link},
      {group, stop},
      {group, which_profiles},
      {group, status}
@@ -94,6 +100,18 @@ nonidempotent_start() ->
 nonidempotent_start(_Config) ->
     ok = minikube:start(sentinel),
     {error, {already_started, _Pid}} = minikube:start(sentinel).
+
+link_start() ->
+    [].
+
+link_start(_Config) ->
+    {ok, _Pid} = minikube:start_link(sentinel).
+
+ensure_stopped() ->
+    [].
+
+ensure_stopped(_Config) ->
+    true = minikube_status:is_running(minikube_cmd:status("sentinel")).
 
 start_then_stop() ->
     [].
