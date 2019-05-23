@@ -11,10 +11,6 @@ matrix:
 
 sudo: required
 dist: xenial
-addons:
-  apt:
-    sources:
-      - docker-xenial
 
 services:
   - docker
