@@ -20,129 +20,71 @@
          terminate/3
         ]).
 
--ignore_xref([{?MODULE, start_link, 1}, {?MODULE, behaviour_info, 1}]).
-
-%%====================================================================
-%% Types
-%%====================================================================
-
--record(minikube_driver_data, {cmd_module :: module(), profile :: string()}).
-
-%%====================================================================
-%% Callbacks for minikube_drivers.
-%%====================================================================
-
--callback start(string()) -> ok.
--callback status(string()) -> {ok, Status} | {error, Reason} when
-      Status :: minikube_status:type(),
-      Reason :: term().
--callback stop(string()) -> ok.
-
 %%====================================================================
 %% API functions
 %%====================================================================
 
--spec start(atom()) -> ok | {error, Reason} when
-      Reason :: term().
+-spec start(atom()) -> ok | {error, term()}.
 start(Profile) ->
-    gen_statem:call(Profile, start).
+  gen_statem:call(Profile, start).
 
--spec status(atom()) -> {ok, minikube_status:type()} | {error, Reason} when
-      Reason :: term().
+-spec status(atom()) -> Result when
+    Result :: {ok, Status} | {error, Reason},
+    Status ::  minikube_status:type(),
+    Reason :: term().
 status(Profile) ->
-    gen_statem:call(Profile, status).
+  gen_statem:call(Profile, status).
 
--spec stop(atom()) -> ok | {error, Reason} when
-      Reason :: term().
+-spec stop(atom()) -> ok | {error, term()}.
 stop(Profile) ->
-    gen_statem:call(Profile, stop).
+  gen_statem:call(Profile, stop).
 
 %%--------------------------------------------------------------------
 
 start_link(Profile) ->
-    gen_statem:start_link({local, Profile}, ?MODULE, [Profile], []).
+  gen_statem:start_link({local, Profile}, ?MODULE, [Profile], []).
 
 %%====================================================================
 %% gen_fsm callbacks
 %%====================================================================
 
 init([Profile]) ->
-    CmdModule = application:get_env(minikube, cmd_module, minikube_cmd),
-    case CmdModule:status(atom_to_list(Profile)) of
-        {ok, Status} ->
-            Data = #minikube_driver_data{
-                      cmd_module=CmdModule,
-                      profile=atom_to_list(Profile)
-                     },
-            ?LOG_DEBUG(#{status => Status, data => Data}),
-            {ok, Status, Data};
-        {error, Reason} ->
-            ?LOG_ERROR(#{error => Reason}),
-            {stop, Reason}
-    end.
+  case minikube_cmd:status(atom_to_list(Profile)) of
+    {ok, Status} ->
+      {ok, Status, atom_to_list(Profile)};
+    {error, Reason} ->
+      {stop, Reason}
+  end.
 
-callback_mode() -> handle_event_function.
+callback_mode() ->
+  handle_event_function.
 
-handle_event(
-  {call, From},
-  start,
-  _Status,
-  #minikube_driver_data{cmd_module=CmdModule, profile=Profile}=Data
- ) ->
-    CmdModule:start(Profile),
-    case CmdModule:status(Profile) of
-        {ok, Status} ->
-            ?LOG_DEBUG(#{status => Status, data => Data}),
-            {next_state, Status, Data, {reply, From, ok}};
-        Other ->
-            ?LOG_ERROR(#{error => Other}),
-            {keep_state_and_data, {reply, From, Other}}
-    end;
-handle_event(
-  {call, From},
-  status,
-  _Status,
-  #minikube_driver_data{cmd_module=CmdModule, profile=Profile}=Data
- ) ->
-    case CmdModule:status(Profile) of
-        {ok, Status} ->
-            ?LOG_DEBUG(#{status => Status, data => Data}),
-            {next_state, Status, Data, {reply, From, {ok, Status}}};
-        Other ->
-            ?LOG_ERROR(#{error => Other}),
-            {keep_state_and_data, {reply, From, Other}}
-    end;
-handle_event(
-  {call, From},
-  stop,
-  _Status,
-  #minikube_driver_data{cmd_module=CmdModule, profile=Profile}=Data
- ) ->
-    CmdModule:stop(Profile),
-    case CmdModule:status(Profile) of
-        {ok, Status} ->
-            ?LOG_DEBUG(#{status => Status, data => Data}),
-            {next_state, Status, Data, {reply, From, ok}};
-        Other ->
-            ?LOG_ERROR(#{error => Other}),
-            {keep_state_and_data, {reply, From, Other}}
-    end.
+handle_event({call, From}, start, _Status, Profile) ->
+  minikube_cmd:start(Profile),
+  case minikube_cmd:status(Profile) of
+    {ok, Status} ->
+      {next_state, Status, Profile, {reply, From, ok}};
+    Other ->
+      {keep_state_and_data, {reply, From, Other}}
+  end;
+handle_event({call, From}, status, _Status, Profile) ->
+  case minikube_cmd:status(Profile) of
+    {ok, Status} ->
+      {next_state, Status, Profile, {reply, From, {ok, Status}}};
+    Other ->
+      {keep_state_and_data, {reply, From, Other}}
+  end;
+handle_event({call, From}, stop, _Status, Profile) ->
+  minikube_cmd:stop(Profile),
+  case minikube_cmd:status(Profile) of
+    {ok, Status} ->
+      {next_state, Status, Profile, {reply, From, ok}};
+    Other ->
+      {keep_state_and_data, {reply, From, Other}}
+  end.
 
-terminate(
-  _Reason,
-  Status,
-  #minikube_driver_data{cmd_module=CmdModule, profile=Profile}
- ) ->
-    case minikube_status:is_running(Status) of
-        true ->
-            ?LOG_DEBUG(#{action => stop, profile => Profile}),
-            CmdModule:stop(Profile),
-            ok;
-        false ->
-            ok
-    end;
-terminate(_Reason, _Status, _Data) ->
-    ok.
+terminate(_Reason, _Status, _Profile) ->
+  ok.
 
 %%====================================================================
 %% Internal functions

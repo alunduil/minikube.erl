@@ -1,6 +1,7 @@
 -module(minikube_SUITE).
 
 -include_lib("common_test/include/ct.hrl").
+-include_lib("stdlib/include/assert.hrl").
 
 -export([
          suite/0,
@@ -15,115 +16,67 @@
         ]).
 
 -export([
-         idempotent_ensure_started/0,
-         idempotent_ensure_started/1,
-         nonidempotent_start/0,
-         nonidempotent_start/1,
-         start_then_stop/0,
-         start_then_stop/1,
-         no_profiles/0,
-         no_profiles/1,
-         sentinel_profile/0,
-         sentinel_profile/1,
+         ensure_started/0,
+         ensure_started/1,
+         assert_stopped/0,
+         assert_stopped/1,
          not_started_status/0,
-         not_started_status/1,
-         started_status/0,
-         started_status/1
+         not_started_status/1
         ]).
 
 suite() ->
-    [{timestamp, {seconds, 30}}].
+  [{timestamp, {seconds, 30}}].
 
 init_per_suite(Config) ->
-    {ok, _} = application:ensure_all_started(minikube),
-    case os:getenv("TRAVIS") of
-        "true" ->
-            io:fwrite("using travis"),
-            minikube:config(vm_driver, none);
-        _ ->
-            io:fwrite("not using travis")
-    end,
-    Config.
+  Config.
 
 end_per_suite(_Config) ->
-    application:stop(minikube).
+  ok.
 
 init_per_group(_GroupName, Config) ->
-    Config.
+  Config.
 
 end_per_group(_GroupName, _Config) ->
-    ok.
+  ok.
 
 init_per_testcase(_TestCase, Config) ->
-    Config.
+  Config.
 
 end_per_testcase(_TestCase, _Config) ->
-    lists:foreach(fun minikube:stop/1, minikube:which_profiles()),
-    ok.
+  ok.
 
 groups() ->
-    [
-     {ensure_started, [], [idempotent_ensure_started]},
-     {start, [], [nonidempotent_start]},
-     {stop, [{repeat, 3}], [start_then_stop]},
-     {which_profiles, [], [no_profiles, sentinel_profile]},
-     {status, [], [not_started_status, started_status]}
-    ].
+  [
+   {start_link, [], [ensure_started, assert_stopped]},
+   {status, [shuffle], [not_started_status]}
+  ].
 
 all() ->
-    [
-     {group, ensure_started},
-     {group, start},
-     {group, stop},
-     {group, which_profiles},
-     {group, status}
-    ].
+  [
+   {group, start_link},
+   {group, status}
+  ].
 
 %%--------------------------------------------------------------------
 
-idempotent_ensure_started() ->
-    [].
+ensure_started() ->
+  [].
 
-idempotent_ensure_started(_Config) ->
-    ok = minikube:ensure_started(sentinel),
-    ok = minikube:ensure_started(sentinel).
+ensure_started(_Config) ->
+  ?assertMatch({ok, _Pid}, minikube:start_link(sentinel)),
+  ?assertMatch(ok, minikube:ensure_started(sentinel)),
+  ?assertMatch(true, minikube:is_running(sentinel)),
+  ?assertMatch(ok, minikube:stop(sentinel)).
 
-nonidempotent_start() ->
-    [].
+assert_stopped() ->
+  [].
 
-nonidempotent_start(_Config) ->
-    ok = minikube:start(sentinel),
-    {error, {already_started, _Pid}} = minikube:start(sentinel).
-
-start_then_stop() ->
-    [].
-
-start_then_stop(_Config) ->
-    ok = minikube:start(sentinel),
-    ok = minikube:stop(sentinel).
-
-no_profiles() ->
-    [].
-
-no_profiles(_Config) ->
-    0 = length(minikube:which_profiles()).
-
-sentinel_profile() ->
-    [].
-
-sentinel_profile(_Config) ->
-    ok = minikube:ensure_started(sentinel),
-    [sentinel] = minikube:which_profiles().
+assert_stopped(_Config) ->
+  ?assertMatch({ok, _Pid}, minikube:start_link(sentinel)),
+  ?assertMatch(false, minikube:is_running(sentinel)).
 
 not_started_status() ->
-    [].
+  [].
 
 not_started_status(_Config) ->
-    {error, not_found} = minikube:is_running(sentinel).
-
-started_status() ->
-    [].
-
-started_status(_Config) ->
-    ok = minikube:ensure_started(sentinel),
-    true = minikube:is_running(sentinel).
+  ?assertMatch({error, not_found}, minikube:is_running(sentinel)).

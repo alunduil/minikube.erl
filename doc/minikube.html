@@ -28,11 +28,10 @@
 <tr><td valign="top"><a href="#ensure_started-1">ensure_started/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#is_running-0">is_running/0</a></td><td></td></tr>
 <tr><td valign="top"><a href="#is_running-1">is_running/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#start-0">start/0</a></td><td></td></tr>
-<tr><td valign="top"><a href="#start-1">start/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#start_link-0">start_link/0</a></td><td></td></tr>
+<tr><td valign="top"><a href="#start_link-1">start_link/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#stop-0">stop/0</a></td><td></td></tr>
 <tr><td valign="top"><a href="#stop-1">stop/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#which_profiles-0">which_profiles/0</a></td><td></td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -55,55 +54,44 @@
 
 <h3 class="function"><a name="ensure_started-0">ensure_started/0</a></h3>
 <div class="spec">
-<p><tt>ensure_started() -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>ensure_started() -&gt; ok | {error, term()}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="ensure_started-1">ensure_started/1</a></h3>
 <div class="spec">
-<p><tt>ensure_started(Profile::<a href="#type-profile">profile()</a>) -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>ensure_started(Profile::<a href="#type-profile">profile()</a>) -&gt; ok | {error, term()}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="is_running-0">is_running/0</a></h3>
 <div class="spec">
-<p><tt>is_running() -&gt; boolean() | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>is_running() -&gt; boolean() | {error, term()}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="is_running-1">is_running/1</a></h3>
 <div class="spec">
-<p><tt>is_running(Profile::<a href="#type-profile">profile()</a>) -&gt; boolean() | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>is_running(Profile::<a href="#type-profile">profile()</a>) -&gt; boolean() | {error, term()}</tt><br></p>
 </div>
 
-<h3 class="function"><a name="start-0">start/0</a></h3>
+<h3 class="function"><a name="start_link-0">start_link/0</a></h3>
 <div class="spec">
-<p><tt>start() -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>start_link() -&gt; Result</tt>
+<ul class="definitions"><li><tt>Result = {ok, Pid} | ignore | {error, Error}</tt></li><li><tt>Pid = pid()</tt></li><li><tt>Error = {already_started, Pid} | term()</tt></li></ul></p>
 </div>
 
-<h3 class="function"><a name="start-1">start/1</a></h3>
+<h3 class="function"><a name="start_link-1">start_link/1</a></h3>
 <div class="spec">
-<p><tt>start(Profile::<a href="#type-profile">profile()</a>) -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>start_link(Profile::<a href="#type-profile">profile()</a>) -&gt; Result</tt>
+<ul class="definitions"><li><tt>Result = {ok, Pid} | ignore | {error, Error}</tt></li><li><tt>Pid = pid()</tt></li><li><tt>Error = {already_started, Pid} | term()</tt></li></ul></p>
 </div>
 
 <h3 class="function"><a name="stop-0">stop/0</a></h3>
 <div class="spec">
-<p><tt>stop() -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>stop() -&gt; ok | {error, term()}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="stop-1">stop/1</a></h3>
 <div class="spec">
-<p><tt>stop(Profile::<a href="#type-profile">profile()</a>) -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
-</div>
-
-<h3 class="function"><a name="which_profiles-0">which_profiles/0</a></h3>
-<div class="spec">
-<p><tt>which_profiles() -&gt; [<a href="#type-profile">profile()</a>]</tt><br></p>
+<p><tt>stop(Profile::<a href="#type-profile">profile()</a>) -&gt; ok | {error, term()}</tt><br></p>
 </div>
 <hr>
 

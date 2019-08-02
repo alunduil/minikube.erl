@@ -13,7 +13,6 @@
 <ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>minikube driver.
 
 <p><b>Behaviours:</b> <a href="gen_statem.html"><tt>gen_statem</tt></a>.</p>
-<p><b>This module defines the <tt>minikube_driver</tt> behaviour.</b><br> Required callback functions: <tt>start/1</tt>, <tt>status/1</tt>, <tt>stop/1</tt>.</p>
 
 <h2><a name="description">Description</a></h2>minikube driver.
 <h2><a name="index">Function Index</a></h2>
@@ -36,7 +35,7 @@
 
 <h3 class="function"><a name="handle_event-4">handle_event/4</a></h3>
 <div class="spec">
-<p><tt>handle_event(X1, X2, Status, Minikube_driver_data) -&gt; any()</tt></p>
+<p><tt>handle_event(X1, X2, Status, Profile) -&gt; any()</tt></p>
 </div>
 
 <h3 class="function"><a name="init-1">init/1</a></h3>
@@ -46,8 +45,7 @@
 
 <h3 class="function"><a name="start-1">start/1</a></h3>
 <div class="spec">
-<p><tt>start(Profile::atom()) -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>start(Profile::atom()) -&gt; ok | {error, term()}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="start_link-1">start_link/1</a></h3>
@@ -57,19 +55,18 @@
 
 <h3 class="function"><a name="status-1">status/1</a></h3>
 <div class="spec">
-<p><tt>status(Profile::atom()) -&gt; {ok, <a href="minikube_status.html#type-type">minikube_status:type()</a>} | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>status(Profile::atom()) -&gt; Result</tt>
+<ul class="definitions"><li><tt>Result = {ok, Status} | {error, Reason}</tt></li><li><tt>Status = <a href="minikube_status.html#type-type">minikube_status:type()</a></tt></li><li><tt>Reason = term()</tt></li></ul></p>
 </div>
 
 <h3 class="function"><a name="stop-1">stop/1</a></h3>
 <div class="spec">
-<p><tt>stop(Profile::atom()) -&gt; ok | {error, Reason}</tt>
-<ul class="definitions"><li><tt>Reason = term()</tt></li></ul></p>
+<p><tt>stop(Profile::atom()) -&gt; ok | {error, term()}</tt><br></p>
 </div>
 
 <h3 class="function"><a name="terminate-3">terminate/3</a></h3>
 <div class="spec">
-<p><tt>terminate(Reason, Status, Minikube_driver_data) -&gt; any()</tt></p>
+<p><tt>terminate(Reason, Status, Profile) -&gt; any()</tt></p>
 </div>
 <hr>
 
