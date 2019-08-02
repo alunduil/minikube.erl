@@ -65,7 +65,8 @@ ensure_started() ->
 ensure_started(_Config) ->
   ?assertMatch({ok, _Pid}, minikube:start_link(sentinel)),
   ?assertMatch(ok, minikube:ensure_started(sentinel)),
-  ?assertMatch(true, minikube:is_running(sentinel)).
+  ?assertMatch(true, minikube:is_running(sentinel)),
+  ?assertMatch(ok, minikube:stop(sentinel)).
 
 assert_stopped() ->
   [].

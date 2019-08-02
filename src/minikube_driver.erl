@@ -83,8 +83,8 @@ handle_event({call, From}, stop, _Status, Profile) ->
       {keep_state_and_data, {reply, From, Other}}
   end.
 
-terminate(_Reason, _Status, Profile) ->
-  minikube_cmd:stop(Profile).
+terminate(_Reason, _Status, _Profile) ->
+  ok.
 
 %%====================================================================
 %% Internal functions
