@@ -2,7 +2,6 @@
  [{description, "Minikube VM Manager"},
   {vsn, "1.0.0"},
   {registered, []},
-  {mod, {minikube_app, []}},
   {applications,
    [kernel,
     stdlib,

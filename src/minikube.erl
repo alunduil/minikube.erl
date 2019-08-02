@@ -10,17 +10,14 @@
          config/0,
          config/1,
          config/2,
-         ensure_started/0,
-         ensure_started/1,
-         start/0,
-         start/1,
          start_link/0,
          start_link/1,
+         ensure_started/0,
+         ensure_started/1,
          is_running/0,
          is_running/1,
          stop/0,
-         stop/1,
-         which_profiles/0
+         stop/1
         ]).
 
 %% Types
@@ -30,17 +27,14 @@
               {?MODULE, config, 0},
               {?MODULE, config, 1},
               {?MODULE, config, 2},
-              {?MODULE, ensure_started, 0},
-              {?MODULE, ensure_started, 1},
-              {?MODULE, start, 0},
-              {?MODULE, start, 1},
               {?MODULE, start_link, 0},
               {?MODULE, start_link, 1},
+              {?MODULE, ensure_started, 0},
+              {?MODULE, ensure_started, 1},
               {?MODULE, is_running, 0},
               {?MODULE, is_running, 1},
               {?MODULE, stop, 0},
-              {?MODULE, stop, 1},
-              {?MODULE, which_profiles, 0}
+              {?MODULE, stop, 1}
              ]).
 
 %%====================================================================
@@ -55,103 +49,70 @@
 
 -spec config() -> [proplists:property()].
 config() ->
-    minikube_config:view().
+  minikube_config:view().
 
 -spec config(atom()) -> string().
 config(Name) ->
-    minikube_config:get(Name).
+  minikube_config:get(Name).
 
 -spec config(Name, Value) -> ok when
-      Name :: atom(),
-      Value :: string().
+    Name :: atom(),
+    Value :: string().
 config(Name, Value) ->
-    minikube_config:set(Name, Value).
+  minikube_config:set(Name, Value).
 
--spec ensure_started() -> ok | {error, Reason} when
-      Reason :: term().
-ensure_started() ->
-    ensure_started(minikube).
-
--spec ensure_started(profile()) -> ok | {error, Reason} when
-      Reason :: term().
-ensure_started(Profile) ->
-    case start(Profile) of
-        ok ->
-            ok;
-        {error, already_present} ->
-            ok;
-        {error, {already_started, _Pid}} ->
-            ok;
-        Error ->
-            Error
-    end.
-
--spec start() -> ok | {error, Reason} when
-      Reason :: term().
-start() ->
-    start(minikube).
-
--spec start(profile()) -> ok | {error, Reason} when
-      Reason :: term().
-start(Profile) ->
-    case minikube_sup:add_profile(Profile) of
-        {ok, _Pid} ->
-            minikube_driver:start(Profile);
-        {ok, _Pid, _Opts} ->
-            minikube_driver:start(Profile);
-        Error ->
-            Error
-    end.
-
--spec start_link() -> ok | {error, Reason} when
-      Reason :: term().
+-spec start_link() -> Result when
+    Result :: {ok, Pid} | ignore | {error, Error},
+    Pid :: pid(),
+    Error :: {already_started, Pid} | term().
 start_link() ->
-    start_link(minikube).
+  start_link(minikube).
 
--spec start_link(profile()) -> ok | {error, Reason} when
-      Reason :: term().
+-spec start_link(profile()) -> Result when
+    Result :: {ok, Pid} | ignore | {error, Error},
+    Pid :: pid(),
+    Error :: {already_started, Pid} | term().
 start_link(Profile) ->
-    Result = minikube_driver:start_link(Profile),
-    ok = minikube_driver:start(Profile),
-    Result.
+  minikube_driver:start_link(Profile).
 
--spec is_running() -> boolean() | {error, Reason} when
-      Reason :: term().
+-spec ensure_started() -> ok | {error, term()}.
+ensure_started() ->
+  ensure_started(minikube).
+
+-spec ensure_started(profile()) -> ok | {error, term()}.
+ensure_started(Profile) ->
+  case is_running(Profile) of
+    false ->
+      minikube_driver:start(Profile);
+    true ->
+      ok;
+    Other ->
+      Other
+  end.
+
+-spec is_running() -> boolean() | {error, term()}.
 is_running() ->
-    is_running(minikube).
+  is_running(minikube).
 
--spec is_running(profile()) -> boolean() | {error, Reason} when
-      Reason :: term().
+-spec is_running(profile()) -> boolean() | {error, term()}.
 is_running(Profile) ->
-    try minikube_driver:status(Profile) of
-        {ok, Status} ->
-            minikube_status:is_running(Status);
-        Error ->
-            Error
-    catch
-        exit:{noproc, _Details} ->
-            {error, not_found}
-    end.
+  try minikube_driver:status(Profile) of
+    {ok, Status} ->
+      minikube_status:is_running(Status);
+    Error ->
+      Error
+  catch
+    exit:{noproc, _Details} ->
+      {error, not_found}
+  end.
 
--spec stop() -> ok | {error, Reason} when
-      Reason :: term().
+-spec stop() -> ok | {error, term()}.
 stop() ->
-    stop(minikube).
+  stop(minikube).
 
--spec stop(profile()) -> ok | {error, Reason} when
-      Reason :: term().
+-spec stop(profile()) -> ok | {error, term()}.
 stop(Profile) ->
-    minikube_driver:stop(Profile),
-    minikube_sup:remove_profile(Profile).
-
--spec which_profiles() -> [profile()].
-which_profiles() ->
-    Children = supervisor:which_children(minikube_sup),
-    [
-     Profile ||
-     {Profile, Child, _Type, _Module} <- Children,
-     is_pid(Child)
-    ].
+  minikube_driver:stop(Profile).
 
 %%====================================================================
 %% Internal functions
