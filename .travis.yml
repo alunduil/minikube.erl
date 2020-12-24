@@ -10,8 +10,10 @@ matrix:
   fast_finish: true
 
 # sudo: required
-#
-# env:
+
+env:
+  - HEX_USERNAME=alunduil
+#   - HEX_KEY=
 #   - CHANGE_MINIKUBE_NONE_USER=true
 #
 # before_script:
@@ -36,3 +38,24 @@ script:
 
 after_success:
   - rebar3 as test coveralls send
+
+jobs:
+  include:
+    - stage: deploy
+      otp_release: "21.3"
+      script: skip
+      deploy:
+        provider: script
+        script: |
+          #!/usr/bin/env bash
+
+          mkdir -p ~/.hex
+
+          echo '{username,<<"'$HEX_USERNAME'">>}.' > ~/.hex/hex.config
+          echo '{key,<<"'$HEX_KEY'">>}.' >> ~/.hex/hex.config
+
+          echo "Y" | rebar3 hex publish
+          rebar3 hex docs
+        skip_cleanup: true
+        on:
+          tags: true
